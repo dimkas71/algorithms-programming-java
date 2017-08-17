@@ -1,0 +1,92 @@
+About a solution of the problem: 
+	https://www.hackerrank.com/challenges/string-construction/problem
+
+below there are two correct solutions of the problem above, but one of them does'n pass tests because of a timeout.
+
+The first one(uncorrect):
+
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    static int stringConstruction(String s) {
+        if (s.isEmpty()) return 0;
+        if (s.length() == 1) return 1;
+        
+	StringBuilder sb = new StringBuilder();
+	int total = 0;
+      
+ 
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+	    String m = sb.toString();
+	    if (m.indexOf(c) == -1) total += 1;
+	    sb.append(c);		
+            
+        }
+        
+        return total;
+    }
+
+    public static void main(String[] args) {
+	Scanner in = new Scanner(System.in);
+        int q = in.nextInt();
+        for(int a0 = 0; a0 < q; a0++){
+            String s = in.next();
+            int result = stringConstruction(s);
+            System.out.println(result);
+        }
+        in.close();
+    }
+}
+
+
+
+The second one(correct):
+
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+    static int stringConstruction(String s) {
+        if (s.isEmpty()) return 0;
+        if (s.length() == 1) return 1;
+        
+        Set<Character> chars = new HashSet<>();
+        
+        for (int i = 0; i < s.length(); i++) {
+            chars.add(s.charAt(i));
+            
+        }
+        
+        return chars.size();
+    }
+
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int q = in.nextInt();
+        for(int a0 = 0; a0 < q; a0++){
+            String s = in.next();
+            int result = stringConstruction(s);
+            System.out.println(result);
+        }
+        in.close();
+    }
+}
+
+
+In the second case it has been used a Set to save chars, only unique chars are usefull and the answer is the Set's size!!!
+
+The first algorithm is correct too, but if the input string has a big length than algorithm is too slow...
+ 
+
+
+
