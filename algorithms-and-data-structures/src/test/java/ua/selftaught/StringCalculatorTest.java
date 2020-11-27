@@ -59,6 +59,13 @@ public class StringCalculatorTest {
         Assertions.assertEquals(46.4, actual, () -> "23.2*2 => 46.4");
     }
 
+    @DisplayName("Evaluate expression '24.2/2' should be equal to 12.1")
+    @Test
+    void testEvaluationDivOperation() {
+        Double actual = StringCalculator.evaluate("24.2/2");
+        Assertions.assertEquals(12.1, actual, () -> "24.2/2 => 12.1");
+    }
+
 
 }
 
@@ -84,6 +91,10 @@ class StringCalculator {
                     "(?<operand1>[0-9]{0,}\\.{0,1}[0-9]{0,})(?<operation>\\*{1})(?<operand2>[0-9]{0,}\\.{0,1}[0-9]{0,})"
                 );
 
+    private static final Pattern BINARY_OPERATION_DIV_PATTERN = Pattern.compile(
+                        "(?<operand1>[0-9]{0,}\\.{0,1}[0-9]{0,})(?<operation>\\/{1})(?<operand2>[0-9]{0,}\\.{0,1}[0-9]{0,})"
+                    );
+
 
     private static final Double ZERO = 0.0;
 
@@ -91,8 +102,20 @@ class StringCalculator {
         checkExpression(expr);
         if (expr.isEmpty()) return ZERO;
 
-        //1. Match the mull operation
-        Matcher m = BINARY_OPERATION_MUL_PATTERN.matcher(expr);
+
+        //1. Match the div operation
+        Matcher m = BINARY_OPERATION_DIV_PATTERN.matcher(expr);
+        if (m.find()) {
+
+            double left = Double.parseDouble(m.group("operand1"));
+            double right = Double.parseDouble(m.group("operand2"));
+
+            String replacement = expr.substring(m.start(), m.end());
+            return evaluate(expr.replace(replacement, String.valueOf(left / right)));
+        }
+
+        //2. Match the mull operation
+        m = BINARY_OPERATION_MUL_PATTERN.matcher(expr);
         if (m.find()) {
 
             double left = Double.parseDouble(m.group("operand1"));
@@ -102,31 +125,25 @@ class StringCalculator {
             return evaluate(expr.replace(replacement, String.valueOf(left * right)));
         }
 
-        //2. Match the add operation
+        //3. Match the add operation
         m = BINARY_OPERATION_ADD_PATTERN.matcher(expr);
         if (m.find()) {
 
-            double result = 0.0;
-
             double left = Double.parseDouble(m.group("operand1"));
             double right = Double.parseDouble(m.group("operand2"));
-            result = left + right;
 
             String replacement = expr.substring(m.start(), m.end());
-            return evaluate(expr.replace(replacement, String.valueOf(result)));
+            return evaluate(expr.replace(replacement, String.valueOf(left + right)));
         }
-        //3. Match the sub operation
+        //4. Match the sub operation
         m = BINARY_OPERATION_SUB_PATTERN.matcher(expr);
         if (m.find()) {
 
-            double result = 0.0;
-
             double left = Double.parseDouble(m.group("operand1"));
             double right = Double.parseDouble(m.group("operand2"));
-            result = left - right;
 
             String replacement = expr.substring(m.start(), m.end());
-            return evaluate(expr.replace(replacement, String.valueOf(result)));
+            return evaluate(expr.replace(replacement, String.valueOf(left - right)));
         }
 
 
