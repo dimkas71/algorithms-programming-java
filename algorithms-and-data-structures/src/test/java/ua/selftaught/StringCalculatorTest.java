@@ -52,6 +52,13 @@ public class StringCalculatorTest {
         Assertions.assertEquals(21.0, actual, () -> "23.2-2.2 => 21.0");
     }
 
+    @DisplayName("Evaluate expression '23.2*2' should be equal to 46.4")
+    @Test
+    void testEvaluationMulOperation() {
+        Double actual = StringCalculator.evaluate("23.2*2");
+        Assertions.assertEquals(46.4, actual, () -> "23.2*2 => 46.4");
+    }
+
 
 }
 
@@ -63,14 +70,18 @@ class StringCalculatorException extends RuntimeException {
 
 class StringCalculator {
 
-    private static final Pattern DOUBLE_NUMBER_PATTERN = Pattern.compile("(?<number>[0-9]{0,}\\.{1}[0-9]{0,})");
+    private static final Pattern DOUBLE_NUMBER_PATTERN = Pattern.compile("(?<number>[0-9]{0,}\\.{0,1}[0-9]{0,})");
 
     private static final Pattern BINARY_OPERATION_ADD_PATTERN = Pattern.compile(
-                "(?<operand1>[0-9]{0,}\\.{1}[0-9]{0,})(?<operation>\\+{1})(?<operand2>[0-9]{0,}\\.{1}[0-9]{0,})"
+                "(?<operand1>[0-9]{0,}\\.{0,1}[0-9]{0,})(?<operation>\\+{1})(?<operand2>[0-9]{0,}\\.{0,1}[0-9]{0,})"
             );
 
     private static final Pattern BINARY_OPERATION_SUB_PATTERN = Pattern.compile(
-                    "(?<operand1>[0-9]{0,}\\.{1}[0-9]{0,})(?<operation>\\-{1})(?<operand2>[0-9]{0,}\\.{1}[0-9]{0,})"
+                    "(?<operand1>[0-9]{0,}\\.{0,1}[0-9]{0,})(?<operation>\\-{1})(?<operand2>[0-9]{0,}\\.{0,1}[0-9]{0,})"
+                );
+
+    private static final Pattern BINARY_OPERATION_MUL_PATTERN = Pattern.compile(
+                    "(?<operand1>[0-9]{0,}\\.{0,1}[0-9]{0,})(?<operation>\\*{1})(?<operand2>[0-9]{0,}\\.{0,1}[0-9]{0,})"
                 );
 
 
@@ -79,8 +90,20 @@ class StringCalculator {
     public static Double evaluate(String expr) {
         checkExpression(expr);
         if (expr.isEmpty()) return ZERO;
-        //1. Match the add operation
-        Matcher m = BINARY_OPERATION_ADD_PATTERN.matcher(expr);
+
+        //1. Match the mull operation
+        Matcher m = BINARY_OPERATION_MUL_PATTERN.matcher(expr);
+        if (m.find()) {
+
+            double left = Double.parseDouble(m.group("operand1"));
+            double right = Double.parseDouble(m.group("operand2"));
+
+            String replacement = expr.substring(m.start(), m.end());
+            return evaluate(expr.replace(replacement, String.valueOf(left * right)));
+        }
+
+        //2. Match the add operation
+        m = BINARY_OPERATION_ADD_PATTERN.matcher(expr);
         if (m.find()) {
 
             double result = 0.0;
@@ -92,7 +115,7 @@ class StringCalculator {
             String replacement = expr.substring(m.start(), m.end());
             return evaluate(expr.replace(replacement, String.valueOf(result)));
         }
-        //2. Match the sub operation
+        //3. Match the sub operation
         m = BINARY_OPERATION_SUB_PATTERN.matcher(expr);
         if (m.find()) {
 
