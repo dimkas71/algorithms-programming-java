@@ -15,6 +15,15 @@ public class StringCalculatorTest {
         Assertions.assertEquals(0.0, actual, () -> "Should be 0.0");
 
     }
+
+    @DisplayName("Expression with a number")
+    @Test
+    void testExpressionWithANumber() {
+        Double actual = StringCalculator.evaluate("23.2");
+
+        Assertions.assertEquals(23.2, actual, () -> "Should be equal 23.2");
+    }
+
 }
 
 class StringCalculator {
@@ -23,7 +32,7 @@ class StringCalculator {
 
     public static Double evaluate(String expr) {
         if (expr.isEmpty()) return ZERO;
-        return ZERO;
+        return Double.parseDouble(expr);
     }
 }
 
