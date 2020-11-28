@@ -3,6 +3,9 @@ package ua.selftaught;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -65,6 +68,26 @@ public class StringCalculatorTest {
         Double actual = StringCalculator.evaluate("24.2/2");
         Assertions.assertEquals(12.1, actual, () -> "24.2/2 => 12.1");
     }
+
+    @DisplayName("Test for multiple expressions")
+    @ParameterizedTest(name = "Test #{index} = Expr {0} => {1}")
+    @MethodSource("stringDoubleProvider")
+    void testWithMultiArgMethodSource(String expr, Double expected) {
+
+    }
+
+    static Stream<Arguments> stringDoubleProvider() {
+        return Stream.of(
+                Arguments.arguments("22.2/2*2-0.2", 22.0),
+                Arguments.arguments("22.2+2-4/2", 22.0),
+                Arguments.arguments("1.5*2-2:2+2", 4.0),
+                Arguments.arguments("0.2", 0.2),
+                Arguments.arguments("2+2+2-3-4:2*4", -5.0)
+        );
+
+
+    }
+
 
 
 }
